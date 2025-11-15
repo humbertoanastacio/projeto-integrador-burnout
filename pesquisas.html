@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+{% block title %}Disparo de Formulários{% endblock %}
+
+{% block head %}
+<style>
+    .container { display: grid; grid-template-columns: 1fr 2fr; gap: 40px; }
+    .form-card, .list-card { background: #1e293b; padding: 25px; border-radius: 12px; }
+    h2 { margin-top: 0; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; }
+    input, textarea, select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #e5e7eb; font-size: 1rem; box-sizing: border-box; font-family: system-ui, sans-serif;}
+    .schedule-group { display: flex; gap: 15px; }
+    textarea { min-height: 120px; }
+    button { border: 0; color: white; padding: 12px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
+    .create-btn { background: #166534; font-size: 1rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px;}
+    th, td { padding: 12px; border-bottom: 1px solid #334155; text-align: left;}
+    .actions .btn { text-decoration: none; color: white; padding: 8px 12px; border-radius: 6px; margin-right: 10px; font-size: 0.9rem;}
+    .dispatch-btn { background: #1d4ed8; }
+    .results-btn { background: #4b5563; }
+    .scroll-box { max-height: 150px; overflow-y: auto; border: 1px solid #334155; padding: 10px; border-radius: 6px; }
+    .flash-messages { list-style: none; padding: 0; margin: 0 0 20px 0; }
+    .flash-messages li { padding: 15px; border-radius: 8px; margin-bottom: 10px; font-weight: 600; }
+    .flash-messages .success { background: #166534; color: #dcfce7; }
+    .flash-messages .error { background: #991b1b; color: #fecaca; }
+</style>
+{% endblock %}
+
+{% block content %}
+    <header><h1>Disparo de Formulários</h1></header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}<ul class="flash-messages">{% for c, m in messages %}<li class="{{ c }}">{{ m }}</li>{% endfor %}</ul>{% endif %}
+    {% endwith %}
+
+    <div class="container">
+        <div class="form-card">
+            <h2>Criar e Agendar Pesquisa</h2>
+            <form action="{{ url_for('criar_pesquisa') }}" method="POST">
+                <div class="form-group">
+                    <label for="titulo">Título da Pesquisa (interno)</label>
+                    <input type="text" id="titulo" name="titulo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email_titulo">Assunto do E-mail</label>
+                    <input type="text" id="email_titulo" name="email_titulo" value="Convite para Pesquisa de Clima: {{ titulo }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="email_corpo">Corpo do E-mail</label>
+                    <textarea id="email_corpo" name="email_corpo" required>Olá {nome_colaborador},
+
+Gostaríamos de convidá-lo(a) a participar da nossa pesquisa.
+
+Clique no link abaixo para responder:
+{link_pesquisa}
+
+Obrigado!</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Agendar Disparo</label>
+                    <div class="schedule-group">
+                        <input type="date" name="agendamento_data" required>
+                        <input type="time" name="agendamento_hora" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Perguntas</label>
+                    <div class="scroll-box">
+                        {% for pergunta in todas_as_perguntas %}<label><input type="checkbox" name="pergunta_ids" value="{{ pergunta.id }}"> {{ pergunta.texto }}</label>{% else %}<p>Nenhuma pergunta cadastrada.</p>{% endfor %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Colaboradores</label>
+                    <div class="scroll-box">
+                        {% for colaborador in todos_os_colaboradores %}<label><input type="checkbox" name="colaborador_ids" value="{{ colaborador.id }}"> {{ colaborador.nome }}</label>{% else %}<p>Nenhum colaborador cadastrado.</p>{% endfor %}
+                    </div>
+                </div>
+                <button type="submit" class="create-btn">Salvar e Agendar</button>
+            </form>
+        </div>
+
+        <div class="list-card">
+            <h2>Pesquisas Criadas e Agendadas</h2>
+            <table>
+                <thead><tr><th>Título</th><th>Status</th><th>Agendamento</th><th>Ações</th></tr></thead>
+                <tbody>
+                    {% for pesquisa in pesquisas %}
+                    <tr>
+                        <td>{{ pesquisa.titulo }}</td>
+                        <td>{{ pesquisa.status }}</td>
+                        <td>{{ pesquisa.agendamento | default('N/A', true) }}</td>
+                        <td class="actions">
+                             <a href="{{ url_for('resultados_pesquisa', pesquisa_id=pesquisa.id) }}" class="results-btn btn">Resultados</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

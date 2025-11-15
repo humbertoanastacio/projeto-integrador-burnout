@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block title %}Painel de Risco{% endblock %}
+{% block head %}
+    <style>
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 30px; }
+        .stat-card { background: #1e293b; padding: 25px; border-radius: 12px; }
+        .stat-card h2 { margin: 0 0 10px 0; font-size: 1.2rem; color: #94a3b8; text-transform: uppercase; }
+        .stat-card p { margin: 0; font-size: 3rem; font-weight: 700; }
+        .stat-card.green p { color: #34d399; }
+        .stat-card.yellow p { color: #f59e0b; }
+        .stat-card.red p { color: #f43f5e; }
+        .list-card { margin-top: 30px; background: #1e293b; padding: 25px; border-radius: 12px; }
+        .list-card h2 { margin-top: 0; }
+        .list-card table { width: 100%; border-collapse: collapse; }
+        .list-card th, .list-card td { padding: 12px 0; text-align: left; border-bottom: 1px solid #334155; }
+        .list-card th { color: #94a3b8; }
+        .list-card tr:last-child td { border-bottom: none; }
+        .score { font-weight: 700; font-size: 1.2rem; }
+    </style>
+{% endblock %}
+{% block content %}
+    <header><h1>Painel de Risco de Burnout</h1></header>
+    <div class="stats-grid">
+        <div class="stat-card {{ 'green' if overall_score <= 2 else ('yellow' if overall_score <= 3.5 else 'red') }}">
+            <h2>Score Geral</h2>
+            <p>{{ "%.2f"|format(overall_score) if overall_score else 'N/A' }}</p>
+        </div>
+        <div class="stat-card">
+            <h2>Total de Respostas</h2>
+            <p>{{ total_respostas }}</p>
+        </div>
+        <div class="stat-card">
+            <h2>Engajamento</h2>
+            <p>{{ "%.0f"|format(engagement_rate) }}%</p>
+        </div>
+    </div>
+    <div class="list-card">
+        <h2>Departamentos em Alerta (Piores Scores)</h2>
+        <table>
+            <thead><tr><th>Departamento</th><th>Score Médio</th></tr></thead>
+            <tbody>
+                {% for depto in depto_scores %}
+                <tr>
+                    <td>{{ depto.departamento }}</td>
+                    <td class="score {{ 'green' if depto.score <= 2 else ('yellow' if depto.score <= 3.5 else 'red') }}">{{ "%.2f"|format(depto.score) }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="2">Nenhum dado de pesquisa dinâmica para analisar.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

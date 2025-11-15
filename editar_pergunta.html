@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block title %}Editar Pergunta{% endblock %}
+
+{% block head %}
+<style>
+    .form-card { background: #1e293b; padding: 25px; border-radius: 12px; max-width: 800px; margin: 30px auto; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; }
+    textarea { width: 100%; min-height: 100px; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #e5e7eb; font-size: 1rem; box-sizing: border-box; font-family: system-ui, sans-serif;}
+    .form-actions { display: flex; gap: 15px; margin-top: 20px; }
+    button { border: 0; color: white; padding: 12px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .btn-save { background: #166534; }
+    .btn-cancel { background: #4b5563; text-decoration: none; display: inline-block; }
+</style>
+{% endblock %}
+
+{% block content %}
+    <header><h1>Editar Pergunta</h1></header>
+
+    <div class="form-card">
+        <form method="POST" action="{{ url_for('editar_pergunta', pergunta_id=pergunta.id) }}">
+            <div class="form-group">
+                <label for="texto">Texto da Pergunta</label>
+                <textarea id="texto" name="texto" required>{{ pergunta.texto }}</textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-save">Salvar Alterações</button>
+                <a href="{{ url_for('perguntas') }}" class="btn-cancel">Cancelar</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

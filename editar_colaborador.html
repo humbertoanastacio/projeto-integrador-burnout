@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block title %}Editar Colaborador{% endblock %}
+{% block head %}<style>.form-card{background:#1e293b;padding:25px;border-radius:12px;max-width:600px;margin:30px auto;}.form-group{margin-bottom:20px;}label{display:block;margin-bottom:8px;font-weight:600;}input,select{width:100%;padding:10px;border-radius:6px;border:1px solid #334155;background:#0f172a;color:#e5e7eb;font-size:1rem;box-sizing:border-box;}.form-actions{display:flex;gap:15px;margin-top:20px;}button{border:0;color:white;padding:12px 20px;border-radius:6px;font-weight:600;cursor:pointer;}.btn-save{background:#166534;}.btn-cancel{background:#4b5563;text-decoration:none;display:inline-block;}</style>{% endblock %}
+{% block content %}
+    <header><h1>Editar Colaborador: {{ colaborador.nome }}</h1></header>
+    <div class="form-card">
+        <form method="POST" action="{{ url_for('editar_colaborador', colaborador_id=colaborador.id) }}">
+            <div class="form-group"><label for="nome">Nome Completo</label><input type="text" id="nome" name="nome" value="{{ colaborador.nome }}" required></div>
+            <div class="form-group"><label for="email">E-mail</label><input type="email" id="email" name="email" value="{{ colaborador.email }}" required></div>
+            <div class="form-group">
+                <label for="departamento_id">Departamento</label>
+                <select name="departamento_id" required>
+                    {% for depto in departamentos %}
+                    <option value="{{ depto.id }}" {% if depto.id == colaborador.departamento_id %}selected{% endif %}>{{ depto.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-save">Salvar Alterações</button>
+                <a href="{{ url_for('colaboradores') }}" class="btn-cancel">Cancelar</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

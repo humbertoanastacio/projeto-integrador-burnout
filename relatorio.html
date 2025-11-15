@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+{% block title %}Relatório Consolidado{% endblock %}
+
+{% block head %}
+    <style>
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 30px; }
+        .stat-card { background: #1e293b; padding: 25px; border-radius: 12px; }
+        .stat-card h2 { margin: 0 0 10px 0; font-size: 1.2rem; color: #94a3b8; }
+        .stat-card p { margin: 0; font-size: 2.5rem; font-weight: 700; }
+        .table-container { margin-top: 40px; }
+        .table-container h2 { margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 15px; border: 1px solid #334155; text-align: left; }
+        th { background-color: #1e293b; }
+        tr:nth-child(even) { background-color: #1a2436; }
+        .export-btn { color: #e5e7eb; background-color: #166534; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-left: 20px; }
+        .filter-form { background: #1e293b; padding: 20px; border-radius: 12px; margin-top: 30px; display: flex; align-items: center; gap: 20px; }
+        .filter-form label { font-weight: 600; }
+        .filter-form input[type="date"] { background: #0f172a; border: 1px solid #334155; color: #e5e7eb; padding: 8px; border-radius: 6px; }
+        .filter-form button { border: 0; background: #6366f1; color: white; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .filter-form a { color: #cbd5e1; text-decoration: none; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <header>
+        <h1>Relatório de Dados Consolidados</h1>
+        <a href="{{ url_for('exportar_csv', start_date=filters.start_date, end_date=filters.end_date) }}" class="export-btn">Exportar para CSV</a>
+    </header>
+
+    <form class="filter-form" method="GET" action="{{ url_for('relatorio') }}">
+        <label for="start_date">De:</label>
+        <input type="date" id="start_date" name="start_date" value="{{ filters.start_date }}">
+        <label for="end_date">Até:</label>
+        <input type="date" id="end_date" name="end_date" value="{{ filters.end_date }}">
+        <button type="submit">Filtrar</button>
+        <a href="{{ url_for('relatorio') }}">Limpar Filtros</a>
+    </form>
+
+    <div class="stats-grid">
+        <div class="stat-card"><h2>Total de Respostas</h2><p>{{ stats.total_respostas }}</p></div>
+        <div class="stat-card"><h2>Média Geral</h2><p>{{ "%.2f"|format(stats.media_geral) }}</p></div>
+        <div class="stat-card"><h2>Pergunta com Maior Média</h2><p>{{ stats.pergunta_maior_media }}</p></div>
+    </div>
+
+    <div class="table-container">
+        <h2>Dados Consolidados por Pergunta</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pergunta</th>
+                    <th>Média de Resposta</th>
+                    <th>Resposta Mais Comum (Moda)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in stats.consolidado_por_pergunta %}
+                <tr>
+                    <td>{{ item.pergunta }}</td>
+                    <td>{{ "%.2f"|format(item.media) }}</td>
+                    <td>{{ item.moda }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <h2>Detalhe de Todas as Respostas ({{ stats.total_respostas }} encontradas)</h2>
+        {% if respostas %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Nome</th>
+                        <th>Departamento</th>
+                        <th>Esgotamento</th>
+                        <th>Recuperação</th>
+                        <th>Sobrecarga</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for resposta in respostas %}
+                    <tr>
+                        <td>{{ resposta['timestamp'].split('T')[0].replace('-', '/') }}</td>
+                        <td>{{ resposta['nome'] }}</td>
+                        <td>{{ resposta['departamento'] }}</td>
+                        <td>{{ resposta['q1'] }}</td>
+                        <td>{{ resposta['q2'] }}</td>
+                        <td>{{ resposta['q3'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+             <p>Nenhuma resposta encontrada para o período selecionado.</p>
+        {% endif %}
+    </div>
+
+{% endblock %}

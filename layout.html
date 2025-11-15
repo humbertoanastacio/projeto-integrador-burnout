@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Painel Gerencial</title>
+    <style>body{margin:0;display:flex;min-height:100vh;background:#0f172a;color:#e5e7eb;font-family:system-ui,sans-serif;}.sidebar{width:240px;background:#1e293b;padding:20px;display:flex;flex-direction:column;border-right:1px solid #334155;}.sidebar h2{font-size:1.5rem;text-align:center;margin:0 0 30px 0;color:#fff;}.sidebar nav a{display:block;color:#cbd5e1;text-decoration:none;padding:12px 15px;border-radius:8px;margin-bottom:10px;font-weight:600;transition:background-color .2s,color .2s;}.sidebar nav a.active,.sidebar nav a:hover{background-color:#334155;color:#fff;}.sidebar nav hr{border:0;border-top:1px solid #334155;margin:15px 0;}.sidebar .logout{margin-top:auto;}.sidebar .logout a{background-color:#991b1b;color:white;text-align:center;display:block;padding:12px 15px;border-radius:8px;text-decoration:none;font-weight:600;}.main-content{flex-grow:1;padding:40px;overflow-y:auto;}header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #334155;padding-bottom:10px;}h1{margin:0;}</style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <aside class="sidebar">
+        <h2>Painel</h2>
+        <nav>
+            <a href="/dashboard" class="{{ 'active' if active_page == 'dashboard' else '' }}">Painel de Risco</a>
+            <a href="/pesquisas" class="{{ 'active' if active_page == 'pesquisas' else '' }}">Pesquisas</a>
+            <a href="/relatorio" class="{{ 'active' if active_page == 'relatorio' else '' }}">Relatório Legado</a>
+            <hr>
+            <a href="/usuarios" class="{{ 'active' if active_page == 'usuarios' else '' }}">Usuários</a>
+            <a href="/colaboradores" class="{{ 'active' if active_page == 'colaboradores' else '' }}">Colaboradores</a>
+            <a href="/perguntas" class="{{ 'active' if active_page == 'perguntas' else '' }}">Banco de Perguntas</a>
+            <a href="/departamentos" class="{{ 'active' if active_page == 'departamentos' else '' }}">Departamentos</a>
+        </nav>
+        <div class="logout"><a href="/logout">Sair</a></div>
+    </aside>
+    <main class="main-content">{% block content %}{% endblock %}</main>
+</body>
+</html>

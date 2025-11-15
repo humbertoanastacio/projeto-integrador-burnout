@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Painel Gerencial</title>
+    <style>
+        body { background: #0f172a; color: #e5e7eb; font-family: system-ui, sans-serif; display: grid; place-items: center; min-height: 100vh; margin: 0; }
+        .login-card { background: #1e293b; padding: 40px; border-radius: 16px; border: 1px solid #334155; width: min(400px, 90%); box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+        h1 { text-align: center; margin-top: 0; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; }
+        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e5e7eb; font-size: 1rem; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; border: 0; border-radius: 8px; background: #6366f1; color: white; font-size: 1rem; font-weight: 700; cursor: pointer; }
+        .error { color: #f43f5e; text-align: center; margin-top: 20px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h1>Acesso Restrito</h1>
+        <form method="POST" action="/login">
+            <div class="form-group">
+                <label for="username">Usuário</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Entrar</button>
+        </form>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p class="error">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ titulo or "Mensagem" }}</title>
+  <style>
+    :root{
+      --bg:#0f172a; --card:#1e293b; --accent:#34d399; --ink:#e5e7eb; --muted:#94a3b8; --line:#334155; --btn:#2563eb; --btnh:#1e40af;
+    }
+    html,body{height:100%}
+    body{
+      display:grid; place-items:center; min-height:90vh; margin:0;
+      font-family:system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background:var(--bg); color:var(--ink);
+    }
+    .card{
+      background:var(--card); padding:40px 50px; border-radius:16px; text-align:center;
+      max-width:780px; box-shadow:0 8px 24px rgba(0,0,0,.4)
+    }
+    h1{font-size:2rem; color:var(--accent); margin:0 0 10px}
+    p{font-size:1.05rem; color:#cbd5e1; margin:6px 0 14px}
+
+    /* STATUS */
+    .status{
+      margin-top:12px; display:flex; align-items:center; justify-content:center;
+      gap:14px; background:#0b1324; border:1px solid var(--line); border-radius:14px; padding:14px;
+    }
+    .status-emoji{font-size:2rem}
+    .status-text{ text-align:left }
+    .status-text strong{display:block; font-size:1.05rem; margin-bottom:4px}
+    .badge{
+      display:inline-block; font-size:.85rem; padding:4px 10px; border-radius:999px; margin-top:6px;
+      color:#0b1324; background:#e5e7eb; font-weight:600
+    }
+
+    /* Próximos passos */
+    .tips{
+      text-align:left; background:#0f172a; border:1px solid var(--line); border-radius:12px;
+      padding:16px; font-size:.95rem; margin-top:16px; color:#cbd5e1
+    }
+    .tips strong{color:var(--accent)}
+    .proto{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.9rem; color:var(--muted); margin-top:12px}
+
+    .actions{margin-top:18px; display:flex; flex-wrap:wrap; justify-content:center; gap:12px}
+    .btn{background:var(--btn); color:#fff; padding:10px 18px; border-radius:10px; text-decoration:none; font-size:.95rem; transition:background .2s}
+    .btn:hover{background:var(--btnh)}
+    .muted{color:var(--muted); font-size:.8rem; margin-top:12px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>{{ titulo or "Obrigado por responder!" }}</h1>
+    <p>{{ mensagem or "Sua participação foi registrada com sucesso." }}</p>
+
+    <!-- STATUS por emoji -->
+    <div class="status" role="status" aria-live="polite">
+      <div class="status-emoji" aria-hidden="true">{{ status_emoji or "🙂" }}</div>
+      <div class="status-text">
+        <strong style="color: {{ status_cor or '#34d399' }}">{{ status_titulo or "Tudo bem" }}</strong>
+        <div>{{ status_texto or "Pelas suas respostas, seu nível geral parece bom." }}</div>
+        {% if media is defined %}
+          <span class="badge" title="Média das respostas">Média: {{ media }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- O que acontece agora -->
+    <div class="tips">
+      <strong>O que acontece agora?</strong>
+      <ul>
+        <li>Sua resposta foi salva com sucesso no sistema.</li>
+        <li>Os resultados são analisados de forma agregada, sem identificação individual.</li>
+        <li>Se necessário, a equipe responsável comunicará próximos passos.</li>
+      </ul>
+    </div>
+
+    <!-- Protocolo e horário -->
+    <div class="proto">
+      Protocolo: <span id="proto"></span> • Registro: <span id="ts"></span>
+    </div>
+
+    <!-- Ações -->
+    <div class="actions">
+      <a href="{{ url_for('index') }}" class="btn">Voltar ao início</a>
+      <a href="mailto:projetosunisa@gmail.com?subject=Suporte%20UnisaCare" class="btn">Falar com suporte</a>
+    </div>
+
+    <p class="muted">Este é um comprovante automático. Guarde o número de protocolo se desejar.</p>
+  </div>
+
+  <script>
+    // Protocolo + timestamp locais (não persistentes)
+    const proto = 'UC-' + Date.now().toString(36).toUpperCase().slice(-8);
+    document.getElementById('proto').textContent = proto;
+    document.getElementById('ts').textContent = new Date().toLocaleString();
+  </script>
+</body>
+</html>

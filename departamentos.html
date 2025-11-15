@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block title %}Gerenciar Departamentos{% endblock %}
+{% block head %}<style>.container{display:grid;grid-template-columns:1fr 2fr;gap:40px;}.form-card,.list-card{background:#1e293b;padding:25px;border-radius:12px;}h2{margin-top:0;}.form-group{margin-bottom:20px;}label{display:block;margin-bottom:8px;font-weight:600;}input{width:100%;padding:10px;border-radius:6px;border:1px solid #334155;background:#0f172a;color:#e5e7eb;font-size:1rem;box-sizing:border-box;}button{border:0;color:white;padding:12px 20px;border-radius:6px;font-weight:600;cursor:pointer;}.add-btn{background:#166534;}table{width:100%;border-collapse:collapse;margin-top:20px;}th,td{padding:12px;border-bottom:1px solid #334155;text-align:left;}.delete-btn{background:#991b1b;color:white;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;}.flash-messages{list-style:none;padding:0;margin:0 0 20px 0;}.flash-messages li{padding:15px;border-radius:8px;margin-bottom:10px;font-weight:600;}.flash-messages .success{background:#166534;color:#dcfce7;}.flash-messages .error{background:#991b1b;color:#fecaca;}</style>{% endblock %}
+{% block content %}
+    <header><h1>Gerenciar Departamentos</h1></header>
+    {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<ul class="flash-messages">{% for c, m in messages %}<li class="{{ c }}">{{ m }}</li>{% endfor %}</ul>{% endif %}{% endwith %}
+    <div class="container">
+        <div class="form-card">
+            <h2>Adicionar Novo Departamento</h2>
+            <form action="{{ url_for('adicionar_departamento') }}" method="POST">
+                <div class="form-group"><label for="nome">Nome do Departamento</label><input type="text" id="nome" name="nome" required></div>
+                <button type="submit" class="add-btn">Adicionar</button>
+            </form>
+        </div>
+        <div class="list-card">
+            <h2>Departamentos Cadastrados</h2>
+            <table>
+                <thead><tr><th>ID</th><th>Nome</th><th>Ação</th></tr></thead>
+                <tbody>
+                    {% for depto in departamentos %}
+                    <tr>
+                        <td>{{ depto.id }}</td>
+                        <td>{{ depto.nome }}</td>
+                        <td><form action="{{ url_for('excluir_departamento', depto_id=depto.id) }}" method="POST" onsubmit="return confirm('Atenção: excluir um departamento pode afetar colaboradores já cadastrados. Continuar?');"><button type="submit" class="delete-btn">Excluir</button></form></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

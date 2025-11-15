@@ -1,0 +1,51 @@
+{% extends 'layout.html' %}
+{% set active_page = 'usuarios' %}
+{% block content %}
+<div class="page-wrap">
+  <a href="{{ url_for('usuarios') }}" class="back">&larr; Voltar</a>
+  <h1 style="margin:8px 0 16px">Editar usuário #{{ user.id }}</h1>
+
+  <div class="uc-card">
+    <form class="grid" action="{{ url_for('editar_usuario', user_id=user.id) }}" method="post">
+      <label>Username
+        <input name="username" value="{{ user.username }}" required>
+      </label>
+      <label>Nova senha (opcional)
+        <input name="password" type="password" placeholder="Deixe em branco para manter">
+      </label>
+
+      <div class="row">
+        <label class="flex2">Grupo
+          <select name="grupo_id" required>
+            {% for g in grupos %}
+            <option value="{{ g.id }}" {% if g.id==user.grupo_id %}selected{% endif %}>{{ g.nome|capitalize }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label class="flex1">Tema
+          <select name="tema">
+            <option value="escuro" {% if (user.tema or 'escuro')=='escuro' %}selected{% endif %}>Escuro</option>
+            <option value="claro"  {% if user.tema=='claro' %}selected{% endif %}>Claro</option>
+          </select>
+        </label>
+      </div>
+
+      <button class="btn" type="submit">Salvar alterações</button>
+    </form>
+  </div>
+</div>
+
+<style>
+.page-wrap{max-width:980px}
+.uc-card{background:var(--card,#1e293b);border:1px solid var(--border,#233143);
+         border-radius:14px;padding:20px}
+.grid{display:grid;gap:14px}
+.row{display:flex;gap:12px}
+.flex2{flex:2}.flex1{flex:1}
+label{display:block;font-size:12px;color:var(--muted,#94a3b8)}
+input,select{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border,#233143);
+             background:var(--inputBg,#0b1220);color:var(--text,#e5e7eb);font-size:14px}
+.btn{background:#2563eb;color:#fff;padding:12px 18px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+.back{color:var(--link,#60a5fa);text-decoration:none}
+</style>
+{% endblock %}

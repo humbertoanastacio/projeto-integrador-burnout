@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ pesquisa.titulo }}</title>
+    <style>:root{--bg-1:#0f172a;--bg-2:#1e293b;--card:#0b1220ee;--text:#e5e7eb;--muted:#94a3b8;--neg-2:#c2410c;--neg-1:#f97316;--neu:#f59e0b;--pos-1:#34d399;--pos-2:#10b981;--ring:#93c5fd;--btn:#6366f1;--btn-2:#22d3ee;--error:#f43f5e;}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;color:var(--text);background:radial-gradient(1200px 800px at 10% 10%,#0a0f1f 0%,var(--bg-1) 40%,var(--bg-2) 100%);min-height:100dvh;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px;}.wrap{width:min(980px,100%);}.card{background:var(--card);backdrop-filter:blur(6px);border:1px solid #1f2a44;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.3);padding:28px;}header{display:flex;align-items:center;gap:16px;margin-bottom:18px;}.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--btn),var(--btn-2));display:grid;place-items:center;font-weight:800;color:white;box-shadow:0 6px 20px rgba(34,211,238,.25);}h1{font-size:clamp(1.25rem,2.2vw,1.8rem);margin:0;}p.sub{color:var(--muted);margin:.25rem 0 0 0;}.legend{display:flex;align-items:center;gap:14px;margin:14px 0 18px;}.dash{width:2px;align-self:stretch;border-left:2px dashed #334155;margin:0 8px;}.pill{border-radius:10px;padding:10px 12px;color:#fff;font-size:.9rem;text-align:center;min-width:130px;box-shadow:inset 0 -2px 0 rgba(255,255,255,.12);}.p-neg2{background:var(--neg-2);}.p-neg1{background:var(--neg-1);}.p-neu{background:var(--neu);color:#1f2937;font-weight:600;}.p-pos1{background:var(--pos-1);color:#053b2d;font-weight:700;}.p-pos2{background:var(--pos-2);}.pergunta{margin:16px 0;padding:16px;border:1px solid #1f2a44;border-radius:14px;background:rgba(17,24,39,.55);}.pergunta h3{margin:0 0 10px;font-size:1.02rem;font-weight:600;color:#fff;}.opcoes{display:flex;gap:10px;flex-wrap:wrap;}.opcao{flex:1 1 160px;display:flex;justify-content:center;align-items:center;border-radius:10px;position:relative;cursor:pointer;user-select:none;transition:transform .15s ease;outline:2px solid transparent;min-height:56px;}.opcao input[type="radio"]{position:absolute;inset:0;opacity:0;cursor:pointer;}.opcao span{padding:8px 10px;text-align:center;font-weight:600;}.negativo2{background:var(--neg-2);color:#fff;}.negativo1{background:var(--neg-1);color:#fff;}.neutro{background:var(--neu);color:#1f2937;}.positivo1{background:var(--pos-1);color:#053b2d;}.positivo2{background:var(--pos-2);color:#052b22;}.opcao:hover{transform:translateY(-2px);}.opcao input[type="radio"]:focus-visible + span,.opcao:focus-within{outline-color:var(--ring);}.opcao input[type="radio"]:checked + span{box-shadow:inset 0 0 0 3px rgba(255,255,255,.22),0 0 0 2px rgba(147,197,253,.65);border-radius:8px;}.actions{display:flex;gap:12px;justify-content:flex-end;margin-top:24px;}button,.btn{appearance:none;border:0;border-radius:12px;padding:12px 18px;font-weight:700;cursor:pointer;color:#0b1220;background:#fff;}.btn-primary{background:linear-gradient(135deg,var(--btn),var(--btn-2));color:#fff;box-shadow:0 10px 24px rgba(99,102,241,.28);}</style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="card">
+            <header>
+                <div class="logo">📝</div>
+                <div>
+                    <h1>{{ pesquisa.titulo }}</h1>
+                    <p class="sub">Por favor, marque sua percepção para cada afirmação abaixo.</p>
+                </div>
+            </header>
+            <div class="legend" aria-hidden="true">
+                <div class="pill p-neg2">Discordo<br>Totalmente</div>
+                <div class="pill p-neg1">Discordo</div>
+                <div class="dash"></div>
+                <div class="pill p-neu">Neutro</div>
+                <div class="pill p-pos1">Concordo</div>
+                <div class="pill p-pos2">Concordo<br>Totalmente</div>
+            </div>
+
+            <form action="{{ url_for('submit_pesquisa', token=token) }}" method="POST">
+
+                {% for pergunta in perguntas %}
+                <div class="pergunta">
+                    <h3>{{ loop.index }}) {{ pergunta.texto }}</h3>
+                    <div class="opcoes" role="radiogroup">
+                        <label class="opcao negativo2"><input type="radio" name="resposta-{{ pergunta.id }}" value="1" required><span>Discordo<br>Totalmente</span></label>
+                        <label class="opcao negativo1"><input type="radio" name="resposta-{{ pergunta.id }}" value="2"><span>Discordo</span></label>
+                        <label class="opcao neutro"><input type="radio" name="resposta-{{ pergunta.id }}" value="3"><span>Neutro</span></label>
+                        <label class="opcao positivo1"><input type="radio" name="resposta-{{ pergunta.id }}" value="4"><span>Concordo</span></label>
+                        <label class="opcao positivo2"><input type="radio" name="resposta-{{ pergunta.id }}" value="5"><span>Concordo<br>Totalmente</span></label>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div class="actions">
+                    <button type="submit" class="btn btn-primary">Enviar Respostas</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

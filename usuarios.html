@@ -1,0 +1,94 @@
+{% extends 'layout.html' %}
+{% set active_page = 'usuarios' %}
+{% block content %}
+<div class="page-wrap">
+  <h1 style="margin:0 0 16px">Usuários</h1>
+
+  <div class="uc-row">
+    <!-- Tabela -->
+    <div class="uc-card">
+      <table class="uc-table">
+        <thead>
+          <tr>
+            <th style="width:72px">ID</th>
+            <th>Username</th>
+            <th style="width:140px">Grupo</th>
+            <th style="width:120px">Tema</th>
+            <th style="width:220px">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for u in usuarios %}
+          <tr>
+            <td>#{{ u.id }}</td>
+            <td>{{ u.username }}</td>
+            <td>
+              {% set g = (u.grupo or 'colaborador') %}
+              <span class="pill
+                {% if g=='admin' %}pill-admin{% elif g=='gestor' %}pill-gestor{% else %}pill-colab{% endif %}">
+                {{ g|capitalize }}
+              </span>
+            </td>
+            <td>{{ (u.tema or 'escuro')|capitalize }}</td>
+            <td class="actions">
+              <a class="btn btn-muted" href="{{ url_for('editar_usuario', user_id=u.id) }}">Editar</a>
+              <form action="{{ url_for('excluir_usuario', user_id=u.id) }}" method="post"
+                    onsubmit="return confirm('Excluir usuário {{u.username}}?');" style="display:inline">
+                <button class="btn btn-danger">Excluir</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5" class="muted">Nenhum usuário cadastrado.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Novo usuário (sem tema) -->
+    <div class="uc-card">
+      <h3 style="margin-top:0">Novo usuário</h3>
+      <form class="grid" action="{{ url_for('adicionar_usuario') }}" method="post">
+        <label>Username
+          <input name="username" required>
+        </label>
+        <label>Senha
+          <input name="password" type="password" required>
+        </label>
+        <label>Grupo
+          <select name="grupo_id" required>
+            {% for g in grupos %}
+              <option value="{{ g.id }}">{{ g.nome|capitalize }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <button class="btn" type="submit">Criar usuário</button>
+      </form>
+      <p class="muted" style="margin-top:8px;font-size:12px">
+        O tema é escolhido pelo próprio usuário em “Editar usuário”.
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+.page-wrap{max-width:1200px}
+.uc-row{display:grid;grid-template-columns:3fr 1.2fr;gap:24px}
+@media(max-width:1100px){.uc-row{grid-template-columns:1fr}}
+.uc-card{background:var(--card, #1e293b);border:1px solid var(--border, #233143);
+         border-radius:14px;padding:20px}
+.uc-table{width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden;font-size:14px}
+.uc-table th,.uc-table td{padding:14px 12px;border-bottom:1px solid var(--border,#233143);text-align:left}
+.uc-table thead th{color:var(--muted,#94a3b8)}
+.muted{color:var(--muted,#94a3b8)}
+.grid{display:grid;gap:12px}
+input,select{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border,#233143);
+             background:var(--inputBg,#0b1220);color:var(--text,#e5e7eb);font-size:14px}
+.btn{background:#2563eb;color:#fff;padding:11px 16px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+.btn-muted{background:#334155}
+.btn-danger{background:#ef4444}
+.actions{display:flex;gap:8px}
+.pill{padding:5px 10px;border-radius:999px;font-size:12px;display:inline-block}
+.pill-admin{background:#1d4ed8}.pill-gestor{background:#065f46}.pill-colab{background:#6b21a8}
+</style>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block title %}Gerenciar Colaboradores{% endblock %}
+{% block head %}<style>.container{display:grid;grid-template-columns:1fr 2fr;gap:40px;}.form-card,.list-card{background:#1e293b;padding:25px;border-radius:12px;}h2{margin-top:0;}.form-group{margin-bottom:20px;}label{display:block;margin-bottom:8px;font-weight:600;}input,select{width:100%;padding:10px;border-radius:6px;border:1px solid #334155;background:#0f172a;color:#e5e7eb;font-size:1rem;box-sizing:border-box;}button{border:0;color:white;padding:12px 20px;border-radius:6px;font-weight:600;cursor:pointer;}.add-btn{background:#166534;}table{width:100%;border-collapse:collapse;margin-top:20px;}th,td{padding:12px;border-bottom:1px solid #334155;text-align:left;}.actions a{text-decoration:none;padding:8px 12px;border-radius:6px;margin-right:10px;}.edit-btn{background:#1d4ed8;color:white;}.delete-btn{background:#991b1b;color:white;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;}.flash-messages{list-style:none;padding:0;margin:0 0 20px 0;}.flash-messages li{padding:15px;border-radius:8px;margin-bottom:10px;font-weight:600;}.flash-messages .success{background:#166534;color:#dcfce7;}.flash-messages .error{background:#991b1b;color:#fecaca;}</style>{% endblock %}
+{% block content %}
+    <header><h1>Gerenciar Colaboradores</h1></header>
+    {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<ul class="flash-messages">{% for c, m in messages %}<li class="{{ c }}">{{ m }}</li>{% endfor %}</ul>{% endif %}{% endwith %}
+    <div class="container">
+        <div class="form-card">
+            <h2>Adicionar Novo Colaborador</h2>
+            <form action="{{ url_for('adicionar_colaborador') }}" method="POST">
+                <div class="form-group"><label for="nome">Nome Completo</label><input type="text" id="nome" name="nome" required></div>
+                <div class="form-group"><label for="email">E-mail</label><input type="email" id="email" name="email" required></div>
+                <div class="form-group">
+                    <label for="departamento_id">Departamento</label>
+                    <select name="departamento_id" required>
+                        {% for depto in departamentos %}<option value="{{ depto.id }}">{{ depto.nome }}</option>{% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="add-btn">Adicionar</button>
+            </form>
+        </div>
+        <div class="list-card">
+            <h2>Colaboradores Cadastrados</h2>
+            <table>
+                <thead><tr><th>Nome</th><th>E-mail</th><th>Departamento</th><th>Ações</th></tr></thead>
+                <tbody>
+                    {% for colab in colaboradores %}
+                    <tr>
+                        <td>{{ colab.nome }}</td><td>{{ colab.email }}</td><td>{{ colab.depto_nome }}</td>
+                        <td class="actions">
+                            <a href="{{ url_for('editar_colaborador', colaborador_id=colab.id) }}" class="edit-btn">Editar</a>
+                            <form action="{{ url_for('excluir_colaborador', colaborador_id=colab.id) }}" method="POST" onsubmit="return confirm('Tem certeza?');" style="display:inline;"><button type="submit" class="delete-btn">Excluir</button></form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

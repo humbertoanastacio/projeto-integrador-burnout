@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+{% block title %}Resultados de {{ pesquisa.titulo }}{% endblock %}
+
+{% block head %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 40px; margin-top: 30px; }
+        .chart-container { background: #1e293b; padding: 20px; border-radius: 12px; }
+        h2 { margin-top: 0; }
+        .table-container { margin-top: 40px; }
+        .table-container h2 { margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 15px; border: 1px solid #334155; text-align: left; }
+        th { background-color: #1e293b; }
+        tr:nth-child(even) { background-color: #1a2436; }
+        .back-link { display: inline-block; margin-top: 30px; color: #93c5fd; font-weight: 600; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+        .no-data-message { background: #1e293b; padding: 40px; border-radius: 12px; text-align: center; font-size: 1.2rem; margin-top: 30px; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <header>
+        <h1>Resultados da Pesquisa: "{{ pesquisa.titulo }}"</h1>
+    </header>
+
+    {% if total_respostas > 0 %}
+        <div class="charts-grid">
+            <div class="chart-container">
+                <h2>Média de Resposta por Pergunta</h2>
+                <canvas id="barChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h2>Respostas por Departamento</h2>
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h2>Respostas Detalhadas ({{ total_respostas }} de {{ total_convidados }} convidados responderam)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Colaborador</th>
+                        <th>Departamento</th>
+                        {% for pergunta in perguntas %}
+                            <th>{{ pergunta.texto | truncate(25, True) }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for colaborador, respostas in respostas_por_colaborador.items() %}
+                    <tr>
+                        <td>{{ colaborador.nome }}</td>
+                        <td>{{ colaborador.depto_nome }}</td>
+                        {% for pergunta in perguntas %}
+                            <td>{{ respostas.get(pergunta.id, 'N/A') }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="no-data-message">
+            <p>Esta pesquisa ainda não recebeu nenhuma resposta.</p>
+        </div>
+    {% endif %}
+
+    <a href="{{ url_for('pesquisas') }}" class="back-link">← Voltar para a lista de pesquisas</a>
+
+    <script>
+        // Só executa o script dos gráficos se houver dados
+        {% if total_respostas > 0 %}
+            const chartData = {{ chart_data|tojson }};
+            const pieChartData = {{ pie_chart_data|tojson }};
+
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            new Chart(barCtx, { type: 'bar', data: { labels: chartData.labels, datasets: [{ label: 'Média de Resposta (1-5)', data: chartData.data, backgroundColor: 'rgba(99, 102, 241, 0.7)' }] }, options: { scales: { y: { beginAtZero: true, max: 5 } } } });
+
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            new Chart(pieCtx, { type: 'pie', data: { labels: pieChartData.labels, datasets: [{ label: 'Respostas', data: pieChartData.data, backgroundColor: ['#c2410c', '#f97316', '#f59e0b', '#34d399', '#10b981', '#22d3ee', '#6366f1'] }] } });
+        {% endif %}
+    </script>
+{% endblock %}
